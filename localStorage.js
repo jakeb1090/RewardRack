@@ -529,6 +529,77 @@ let stores = [
   }
 ]
 
-    localStorage.setItem("amexCards", JSON.stringify(cards));
+let amexCards = [
+  {
+    "cardName": "The Platinum Card®",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-card.png",
+    "benefits": [
+      "5x points on flights booked directly with airlines (points cap applies)",
+      "Up to $20/month back at participating digital entertainment partners",
+      "Access to 1400+ airport lounges worldwide with American Express Global Lounge Collection®"
+    ],
+    "welcomeOffer": "150,000 Membership Rewards® Points after spending $8,000 in first 6 months"
+  },
+  {
+    "cardName": "American Express® Gold Card",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png",
+    "benefits": [
+      "4X points at restaurants worldwide (up to $50K)",
+      "4X points at U.S. supermarkets (up to $25K)",
+      "3X points on flights booked directly with airlines"
+    ],
+    "welcomeOffer": "90,000 Membership Rewards® Points after spending $6,000 in first 6 months"
+  },
+  {
+    "cardName": "Blue Cash Preferred® Card",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/blue-cash-preferred.png",
+    "benefits": [
+      "6% cash back at U.S. supermarkets (up to $6K)",
+      "6% cash back on select U.S. streaming subscriptions",
+      "3% cash back on transit purchases"
+    ],
+    "welcomeOffer": "$300 back after spending $3,000 in first 6 months"
+  },
+  {
+    "cardName": "Blue Cash Everyday® Card",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/blue-cash-everyday.png",
+    "benefits": [
+      "3% cash back at U.S. supermarkets (up to $6K, then 1%)",
+      "3% cash back on U.S. online retail purchases (up to $6K, then 1%)",
+      "3% cash back at U.S. gas stations (up to $6K, then 1%)"
+    ],
+    "welcomeOffer": "$200 back after spending $2,000 in first 6 months"
+  },
+  {
+    "cardName": "Delta SkyMiles® Gold Card",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-delta-skymiles.png",
+    "benefits": [
+      "Save 15% on Delta Award Travel",
+      "$200 Delta Flight Credit after $10,000 spend in a year",
+      "2X Miles on Delta purchases, restaurants and U.S. supermarkets"
+    ],
+    "welcomeOffer": "80,000 Bonus Miles after spending $3,000 in first 6 months (ends 4/2/25)"
+  },
+  {
+    "cardName": "Delta SkyMiles® Platinum Card",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-delta-skymiles.png",
+    "benefits": [
+      "MQD Headstart and MQD Boost",
+      "Save 15% on Delta Award Travel",
+      "First checked bag free + Zone 5 Priority Boarding"
+    ],
+    "welcomeOffer": "90,000 Bonus Miles after spending $4,000 in first 6 months (ends 4/2/25)"
+  },
+  {
+    "cardName": "Marriott Bonvoy Bevy™ Card",
+    "cardImage": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/marriott-bonvoy-bevy-card.png",
+    "benefits": [
+      "6X points at hotels participating in Marriott Bonvoy®"
+    ],
+    "welcomeOffer": "Not specified"
+  }
+]
+
+    localStorage.setItem("amexCards", JSON.stringify(amexCards));
     localStorage.setItem("stores", JSON.stringify(stores));
     console.log("Credit card data stored in localStorage");
