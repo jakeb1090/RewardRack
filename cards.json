@@ -1,0 +1,56 @@
+[
+    {
+      "name": "RBC Avion Visa Infinite",
+      "bank": "RBC",
+      "image": "https://www.rbcroyalbank.com/credit-cards/app/assets/cards/iav_infiniteavion_en_sm.png",
+      "type": "Points",
+      "point_type": "RBC",
+      "points": {
+        "general": 1.14,
+        "restaurant": 1.14,
+        "grocery": 1.14,
+        "drug_store": 1.14,
+        "gas": 1.14,
+        "travel": 1.14,
+        "entertainment": 1.14,
+        "bill_payments": 1.14,
+        "store_specific": false
+      }
+    },
+    {
+      "name": "RBC Rewards+ Visa",
+      "bank": "RBC",
+      "image": "https://www.rbcroyalbank.com/credit-cards/app/assets/cards/rvc_rewardsplus_en_sm.png",
+      "type": "Points",
+      "point_type": "RBC",
+      "points": {
+        "general": 0.57,
+        "restaurant": 0.57,
+        "grocery": 1.14,
+        "drug_store": 1.14,
+        "gas": 1.14,
+        "travel": 0.57,
+        "entertainment": 0.57,
+        "bill_payments": 0.57,
+        "store_specific": false
+      }
+    },
+    {
+      "name": "RBC Cash Back Preferred World Elite Mastercard",
+      "bank": "RBC",
+      "image": "https://www.rbcroyalbank.com/credit-cards/app/assets/cards/mcp_cashbackpreferred_en_sm.png",
+      "type": "Cashback",
+      "point_type": false,
+      "points": {
+        "general": 1.5,
+        "restaurant": 1.5,
+        "grocery": 1.5,
+        "drug_store": 1.5,
+        "gas": 1.5,
+        "travel": 1.5,
+        "entertainment": 1.5,
+        "bill_payments": 1.5,
+        "store_specific": false
+      }
+    }
+  ]

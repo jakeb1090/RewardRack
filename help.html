@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amex Card Search</title>
+    <script src="localstorage.js"></script>
+    <script src="help.js"></script>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          position: relative;
+          background-color: #f4f4f4;
+      }
+      #searchContainer {
+          position: relative;
+          width: 100%;
+      }
+      #searchInput {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 20px;
+          font-size: 16px;
+      }
+      #autocompleteDropdown {
+          position: absolute;
+          top: 50px;
+          left: 0;
+          width: 100%;
+          max-height: 300px;
+          overflow-y: auto;
+          border: 1px solid #ddd;
+          background-color: white;
+          z-index: 10;
+          display: none;
+      }
+      #autocompleteDropdown .dropdown-item {
+          padding: 10px;
+          cursor: pointer;
+          border-bottom: 1px solid #f1f1f1;
+          display: flex;
+          align-items: center;
+      }
+      #autocompleteDropdown .dropdown-item img {
+          width: 50px;
+          height: 50px;
+          margin-right: 10px;
+          object-fit: contain;
+      }
+      #autocompleteDropdown .dropdown-item:hover {
+          background-color: #f1f1f1;
+      }
+      .card {
+          display: flex;
+          background-color: white;
+          border: 1px solid #ddd;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      .card-image {
+          width: 250px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #f8f8f8;
+          padding: 20px;
+      }
+      .card-image img {
+          max-width: 100%;
+          max-height: 200px;
+          object-fit: contain;
+      }
+      .card-details {
+          flex-grow: 1;
+          padding: 20px;
+      }
+      .card-name {
+          font-size: 1.5em;
+          margin-bottom: 10px;
+      }
+      .card-bank {
+          color: #666;
+          margin-bottom: 15px;
+      }
+      .card-type {
+          display: inline-block;
+          padding: 5px 10px;
+          background-color: #e0e0e0;
+          border-radius: 5px;
+          margin-bottom: 15px;
+      }
+      .card-rewards {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+      }
+      .reward-item {
+          text-align: center;
+          background-color: #f0f0f0;
+          padding: 10px;
+          border-radius: 5px;
+      }
+      .reward-label {
+          font-size: 0.8em;
+          color: #666;
+          margin-bottom: 5px;
+      }
+      .reward-value {
+          font-weight: bold;
+      }
+      #myCardsSection {
+          margin-top: 30px;
+          border-top: 2px solid #ddd;
+          padding-top: 20px;
+      }
+  </style>
+</head>
+<body>
+    <h1>My Cards</h1>
+
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Search cards by name, bank, or type...">
+        <div id="autocompleteDropdown"></div>
+    </div>
+
+    <div id="myCardsSection">
+        <!-- <h2>My Selected Cards</h2> -->
+        <div id="myCardsContainer"></div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+        const myCardsContainer = document.getElementById('myCardsContainer');
+
+        // Function to load cards from local storage
+        function loadCardsFromLocalStorage(key = 'amexCards') {
+            const cardsData = localStorage.getItem(key);
+            return cardsData ? JSON.parse(cardsData) : [];
+        }
+
+        // Function to save cards to local storage
+        function saveCardsToLocalStorage(cards, key = 'amexCards') {
+            localStorage.setItem(key, JSON.stringify(cards));
+        }
+
+        // Function to render cards
+        function renderCards(cards, container) {
+          container.innerHTML = ''; // Clear previous results
+
+          cards.forEach(card => {
+              const cardElement = document.createElement('div');
+              cardElement.classList.add('card');
+
+              // Determine card type tag
+              const typeTag = card.type === 'Cashback' ?
+                  '<span class="card-type" style="background-color: #4CAF50; color: white;">Cashback</span>' :
+                  '<span class="card-type" style="background-color: #2196F3; color: white;">Points</span>';
+
+              // Create card content
+              cardElement.innerHTML = `
+                  <div class="card-image">
+                      <img src="${card.image}" alt="${card.name} card image">
+                  </div>
+                  <div class="card-details">
+                      <div class="card-name">${card.name}</div>
+                      <div class="card-bank">${card.bank}</div>
+                      ${typeTag}
+                      <div class="card-rewards">
+                          <div class="reward-item">
+                              <div class="reward-label">General</div>
+                              <div class="reward-value">${card.points.general}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Restaurants</div>
+                              <div class="reward-value">${card.points.restaurant}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Grocery</div>
+                              <div class="reward-value">${card.points.grocery}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Pharmacies</div>
+                              <div class="reward-value">${card.points.drug_store}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Gas</div>
+                              <div class="reward-value">${card.points.gas}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Travel</div>
+                              <div class="reward-value">${card.points.travel}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Entertainment</div>
+                              <div class="reward-value">${card.points.entertainment}%</div>
+                          </div>
+                          <div class="reward-item">
+                              <div class="reward-label">Bill Payments</div>
+                              <div class="reward-value">${card.points.bill_payments}%</div>
+                          </div>
+                      </div>
+                  </div>
+              `;
+
+              container.appendChild(cardElement);
+          });
+      }
+
+        // Function to show autocomplete dropdown
+        function showAutocompleteDropdown(matches) {
+            autocompleteDropdown.innerHTML = '';
+
+            if (matches.length > 0) {
+                matches.forEach(card => {
+                    const dropdownItem = document.createElement('div');
+                    dropdownItem.classList.add('dropdown-item');
+
+                    // Create dropdown item with image and name
+                    dropdownItem.innerHTML = `
+                        <img src="${card.image}" alt="${card.name} card image">
+                        <span>${card.name}</span>
+                    `;
+
+                    dropdownItem.addEventListener('click', () => {
+                        // Add card to 'myCards' in local storage
+                        const myCards = loadCardsFromLocalStorage('myCards');
+
+                        // Check if card is already in myCards
+                        const isCardAlreadyAdded = myCards.some(c => c.name === card.name);
+
+                        if (!isCardAlreadyAdded) {
+                            myCards.push(card);
+                            saveCardsToLocalStorage(myCards, 'myCards');
+
+                            // Render my cards
+                            renderCards(myCards, myCardsContainer);
+                        }
+
+                        // Clear search input and dropdown
+                        searchInput.value = '';
+                        autocompleteDropdown.style.display = 'none';
+                    });
+
+                    autocompleteDropdown.appendChild(dropdownItem);
+                });
+
+                autocompleteDropdown.style.display = 'block';
+            } else {
+                autocompleteDropdown.style.display = 'none';
+            }
+        }
+
+        // Function to filter cards for dropdown
+        function filterCardsForDropdown(searchTerm) {
+            const cards = loadCardsFromLocalStorage();
+            const filteredCards = cards.filter(card =>
+                card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                card.bank.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                card.type.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            showAutocompleteDropdown(filteredCards);
+        }
+
+        // Event listener for search input
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value;
+            filterCardsForDropdown(searchTerm);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+                autocompleteDropdown.style.display = 'none';
+            }
+        });
+
+        // Optional: Provide a way to set cards in local storage
+        function setAmexCardsInLocalStorage() {
+            const amexCards = [
+                // Paste the entire JSON array of Amex cards here
+                {"name": "SimplyCashTM Preferred Card from American Express", "bank": "Amex", "image": "https://icm.aexp-static.com/Internet/internationalcardshop/en_ca/images/cards/SimplyCash_Preferred_Card.png", "type": "Cashback", "point_type": false, "points": {"general": 2.0, "restaurant": 2.0, "grocery": 2.0, "drug_store": 2.0, "gas": 2.0, "travel": 2.0, "entertainment": 2.0, "bill_payments": 2.0, "store_specific": false}}
+                // Add more cards from the previous JSON
+            ];
+            saveCardsToLocalStorage(amexCards);
+            console.log('Amex cards set in local storage');
+        }
+
+        // On page load, initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render My Cards
+            const myCards = loadCardsFromLocalStorage('myCards');
+            renderCards(myCards, myCardsContainer);
+
+            // Uncomment the line below to set cards in local storage when needed
+            // setAmexCardsInLocalStorage();
+        });
+    </script>
+</body>
+</html>

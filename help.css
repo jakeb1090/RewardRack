@@ -1,0 +1,39 @@
+/* ...existing code... */
+
+#searchInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#resultsContainer {
+    display: none;
+    position: absolute;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.card-result {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.card-result img {
+    width: 50px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.card-result span {
+    font-size: 14px;
+}
+
+/* ...existing code... */
