@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Worried about your wallet bulge? Remembering which credit card to use for which situation is difficult, but it doesn't have to be. DisCard missed opportunity costs so you can spend with confidence!" />
+
+    <title>DisCard</title>
+    <link rel="shortcut icon" type="image/png" href="/image/icon/logo_l.png"/>
+
+    <link rel="manifest" href="/resource/appmanifest.webmanifest">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/signinbtn.css">
+    <link rel="stylesheet" href="css/creditcardlist.css">
+    <link rel="stylesheet" href="css/creditcardtile.css">
+    <script type="text/javascript" src="js/geolocation.js"></script>
+    <script type="text/javascript" src="js/rakutensearch.js" defer></script>
+    <script type="text/javascript" src="js/cardrecommendation.js" defer></script>
+    <script type="text/javascript" src="js/mock-data.js" defer></script>
+</head>
+<body class="d-flex flex-grow flex-column h-100vh">
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbuW6io6kSXL0HzNwwLs42Da03rxIO70A&libraries=places&v=weekly"
+      async
+    ></script>
+
+    <nav class="navbar navbar-expand navbar-light navbar-branding brand-color-background">
+        <a class="navbar-brand ms-2" href="/">
+            <img src="/image/logo/logo_no_padding.png" width="93" height="40" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/creditcardlist.html">My Cards</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item pe-3">
+                    <div class="row">
+                        <a id="google-login-button" class="btn btn-outline-dark logged-in" role="button" style="text-transform:none;">
+                            <img style="width: 20px; padding-top:3px; margin-left:3px; margin-right:3px; float: left;" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+                            <div class="logintext">Mock User</div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Location Warning Container -->
+    <div id="storeGeoErrorContainer"></div>
+    <!-- No Cards Error Container -->
+    <div id="suggestionNoCardsContainer"></div>
+    <!-- Search -->
+    <div class="input-group-lg m-3 d-grid col-10 col-lg-8 mx-auto">
+        <input id="storeSearchInput" type="text" class="form-control" placeholder="Store" aria-label="Search Store" aria-describedby="basic-addon1">
+        <p><small id="gmapsAttributionField"></small></p>
+    </div>
+    <!-- Use Location -->
+    <div class="d-grid gap-2 col-10 col-lg-8 mx-auto">
+        <button id="storeGeolocateButton" type="button" class="btn btn-outline-primary btn-lg"><i class="bi bi-geo-alt-fill"></i> Use My Location</button>
+    </div>
+    <!-- Reccomendation Container -->
+    <div class="container mt-3">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 position-relative">
+            <!-- Best Card -->
+            <div class="col order-1 order-md-2 mb-3">
+                <div class="collapse" id="bestCardImgCollapse">
+                    <div id="bestCardIcon" class="d-flex justify-content-center" data-bs-toggle="collapse" href="#bestCardDescCollapse" role="button" aria-expanded="false" aria-controls="bestCardDescCollapse">
+                        <img id="creditCardPreviewImg" class="wallet-card border border-3" src="https://via.placeholder.com/860x540">
+                    </div>
+                </div>
+            </div>
+            <div class="col order-2 order-md-1 mx-auto justify-content-center">
+                <div class="collapse width-disabled right-disabled" id="bestCardDescCollapse">
+                    <div class="card card-body">
+                        <h1 id="bestCardDescName" class="display-6 mw-100">BEST CARD NAME</h1>
+                        <ul><li id="bestCardDescCashback">CategoryName | XX% Cashback</li></ul>
+                    </div>
+                    <!-- Alt Card Suggestion -->
+                    <div class="card card-body" id="secondCardBody">
+                        <h1 class="lead" id="secondCardDescName">2nd Choice</h1>
+                        <div class="container">
+                            <div class="row row-cols-2">
+                                <div class="col-8">
+                                    <ul><li id="secondCardDescCashback">CategoryName | XX% Cashback</li></ul>
+                                </div>
+                                <div class="col-4">
+                                    <img id="creditCardPreviewImg2" class="wallet-card display-block" src="https://via.placeholder.com/860x540">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Cashback Suggestion -->
+            <div class="col order-3">
+                <div class="collapse" id="cashbackSuggestionCollapse">
+                    <!--  -->
+                    <h1 class="display-6">Other</h1>
+                    <h1 class="h4 rakuten">Bonus Cashback Available</h1>
+                    <h1 class="h6" id="cashbackSuggestionImg"></h1>
+                    <h1 class="h6" id="cashbackSuggestionAmount"></h1>
+                    <h1 class="h6" id="cashbackSuggestionLink"></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Quick Cat -->
+    <div class="m-3 col-lg-8 mx-auto">
+        <h1 class="display-5 text-center">Quick Category</h1>
+        <div class="container mt-3 ms-auto me-auto">
+            <div class="row row justify-content-center row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2 g-sm-3">
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('grocery')"><i class="bi bi-cart4 float-start lh-base"></i> Grocery</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('drug')"><i class="fas fa-prescription float-start lh-base"></i> Pharmacy</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('gas')"><i class="fas fa-gas-pump float-start lh-base"></i> Gas Station</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('restaurant')"><i class="fas fa-utensils float-start lh-base"></i> Restaurant</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('entertainment')"><i class="fas fa-ticket-alt float-start lh-base"></i> Entertainment</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('bill')"><i class="fas fa-file-invoice-dollar float-start lh-base"></i> Bill Payment</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType('travel')"><i class="fas fa-plane-departure float-start lh-base"></i> Travel</button>
+                </div>
+                <div class="col d-grid col-8 col-sm-6 col-lg-4 mx-auto">
+                    <button type="button" class="btn btn-outline-secondary quick-category-btn" onclick="hideRakuten();recommendCardFromType()"><i class="fas fa-percent float-start lh-base"></i> Other</button>
+                </div>
+              </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="decription" content="This is the page where you can view and add to your set of credit cards on DisCard. Clicking on a card shows details for the card like its name and cashback details. To add a card, you can click on the search button or the manual add button.">
+
+  <title>DisCard</title>
+  <link rel="shortcut icon" type="image/png" href="/image/icon/logo_l.png"/>
+
+  <link rel="manifest" href="/resource/appmanifest.webmanifest">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+  <!-- Styles for the credit card list -->
+  <style>
+    #searchCardQueryList {
+      position: absolute;
+      z-index: 100;
+      width: 100%;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    #searchCardQueryList li {
+      cursor: pointer;
+    }
+
+    #searchCardQueryList li:hover {
+      background-color: #f8f9fa;
+    }
+
+    #searchCardQueryContainer {
+      position: relative;
+    }
+
+    .card-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 10px;
+    }
+
+    .wallet-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .wallet-card:hover {
+      transform: scale(1.03);
+    }
+  </style>
+
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/aspectratiopad.css">
+  <link rel="stylesheet" href="/css/signinbtn.css">
+  <link rel="stylesheet" href="/css/creditcardmodal.css">
+  <link rel="stylesheet" href="/css/creditcardtile.css">
+  <script type="text/javascript" src="/js/loginflow.js" defer></script>
+  <script type="text/javascript" src="/js/creditcardlist.js" defer></script>
+  <script type="text/javascript" src="/js/flexboxanimation.js"></script>
+  <script type="text/javascript" src="/js/cardrecommendation.js" defer></script>
+</head>
+<body class="d-flex flex-grow flex-column h-100vh">
+  <!-- Optional JavaScript; choose one of the two! -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  <nav class="navbar navbar-expand navbar-light navbar-branding brand-color-background">
+    <a class="navbar-brand ms-2" href="/">
+        <img src="/image/logo/logo_no_padding.png" width="93" height="40" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link active" href="/">Back</a>
+            </li>
+        </ul>
+    </div>
+  </nav>
+
+  <!-- Add Card Modal -->
+  <div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="addCardForm" class="modal-content needs-validation" action="javascript:void(0);" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCardModalLabel">Add Card</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="creditCardPreviewArea" class="card-preview-area position-relative d-flex justify-content-center border border-3 mb-0">
+            <label id="creditCardPreviewImgPickerLabel" for="creditCardImgPickerForm" class="form-label m-0 p-0">
+              <div id="creditCardPreviewImgPicker" class="position-absolute top-50 start-50 translate-middle">
+                <svg class="bi" width="64" height="64" fill="currentColor">
+                  <use xlink:href="image/bootstrap-icons.svg#file-earmark-plus"/>
+                </svg>
+              </div>
+              <img id="creditCardPreviewImg" class="invisible" src="https://via.placeholder.com/860x540">
+            </label>
+          </div>
+          <input class="d-none" id="creditCardImgPickerForm" type="file" accept="image/*" required>
+          <div class="invalid-feedback">
+            An image is required.
+          </div>
+          <div class="input-group mt-3 mb-3">
+            <span class="input-group-text" id="basic-addon1">Name</span>
+            <input id="addCardFormName" type="text" class="form-control" aria-describedby="basic-addon1" required>
+          </div>
+          <div class="d-flex justify-content-between">
+            <h4>Categories</h4>
+            <button type="button" class="btn btn-secondary btn-sm" id="applyGeneralBtn">Apply General Cashback to Blank Fields</button>
+          </div>
+          <div class="d-flex flex-row flex-fill">
+            <div class="p-1">
+              <h6>General</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormGeneralCashback" type="text" class="form-control" placeholder="Cashback" aria-label="General Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Restaurant</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormRestaurantCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Restaurant Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Grocery</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormGroceryCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Grocery Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-row flex-fill">
+            <div class="p-1">
+              <h6>Drug Store</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormDrugCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Drug Store Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Gas</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormGasCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Gas Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Travel</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormTravelCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Travel Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-row flex-fill">
+            <div class="p-1">
+              <h6>Entertainment</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormEntertainmentCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Entertainment Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Bill Payments</h6>
+              <div class="input-group mb-3">
+                <input id="addCardFormBillCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Bill Payments Cashback" aria-describedby="basic-addon1" pattern="[0-9\.]+" required>
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+          </div>
+          <h4>Add Store</h4>
+          <div class="input-group mb-3 p-1">
+            <button class="btn btn-outline-secondary" type="button" id="button-addon1">+</button>
+            <input id="addCardFormCustomStoreName" type="text" class="form-control" placeholder="Store" aria-label="Store">
+            <span class="input-group-text">@</span>
+            <input id="addCardFormCustomStoreCashback" type="text" class="form-control" placeholder="Cashback" aria-label="Cashback" pattern="[0-9\.]+">
+            <span class="input-group-text" id="basic-addon2">%</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="discardCardBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveCardBtn" onclick="logIt()">Save</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Search Card Modal -->
+  <div class="modal fade" id="searchCardModal" tabindex="-1" aria-labelledby="searchCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="searchCardModalLabel">Search Card</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="searchCardQueryContainer" class="d-flex input-group-lg mb-3 ms-3 me-3">
+            <input id="searchCardQuery" type="text" class="form-control" placeholder="Search by name or bank" aria-label="Search" aria-describedby="basic-addon1">
+            <ul id="searchCardQueryList" class="list-group">
+              <!-- Search results will appear here -->
+            </ul>
+          </div>
+          <div id="searchCardPreviewArea" class="card-preview-area position-relative d-flex justify-content-center border border-3 mb-3">
+            <img id="searchCardPreviewImg" class="invisible" src="https://via.placeholder.com/860x540">
+          </div>
+
+          <h4>Categories</h4>
+          <div class="d-flex flex-row flex-fill">
+            <div class="p-1">
+              <h6>General</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldGeneralCashback" type="text" class="form-control" placeholder="% Back" aria-label="General Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Restaurant</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldRestaurantCashback" type="text" class="form-control" placeholder="% Back" aria-label="Restaurant Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Grocery</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldGroceryCashback" type="text" class="form-control" placeholder="% Back" aria-label="Grocery Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-row flex-fill">
+            <div class="p-1">
+              <h6>Drug Store</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldDrugCashback" type="text" class="form-control" placeholder="% Back" aria-label="Drug Store Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Gas</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldGasCashback" type="text" class="form-control" placeholder="% Back" aria-label="Gas Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Travel</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldTravelCashback" type="text" class="form-control" placeholder="% Back" aria-label="Travel Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-row flex-fill">
+            <div class="p-1">
+              <h6>Entertainment</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldEntertainmentCashback" type="text" class="form-control" placeholder="% Back" aria-label="Entertainment Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+            <div class="p-1">
+              <h6>Bill Payments</h6>
+              <div class="input-group mb-3">
+                <input id="searchCardFieldBillCashback" type="text" class="form-control flex-grow-1" placeholder="% Back" aria-label="Bill Payments Cashback" aria-describedby="basic-addon1" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="searchCardAddBtn" type="button" class="btn btn-primary">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id=userWalletCards>
+    <h1 class="display-1 text-center">My Cards</h1>
+
+    <div id="userWalletCardsFlex" class="mt-3 text-center align-center d-flex flex-wrap justify-content-evenly flex-wrap-anim">
+      <div class="wallet-card-container m-2">
+        <div id="userWalletSearchCard" class="wallet-card border border-3 position-relative" data-bs-toggle="modal" data-bs-target="#searchCardModal">
+          <svg class="bi position-absolute top-50 start-50 translate-middle" width="64" height="64" fill="currentColor">
+            <use xlink:href="image/bootstrap-icons.svg#search"/>
+          </svg>
+          <h1 class="display-6">Search</h1>
+        </div>
+      </div>
+      <div class="wallet-card-container m-2">
+        <div id="userWalletAddCard" class="wallet-card border border-3 position-relative" data-bs-toggle="modal" data-bs-target="#addCardModal">
+          <svg class="bi position-absolute top-50 start-50 translate-middle" width="64" height="64" fill="currentColor">
+            <use xlink:href="image/bootstrap-icons.svg#plus-circle"/>
+          </svg>
+          <h1 class="display-6">Manual Add</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Details Modal (will be created dynamically) -->
+
+  <script>
+    // Sample card 1
+const amexCard1 = {
+  "bank": "Amex",
+  "image": "https://icm.aexp-static.com/Internet/internationalcardshop/en_ca/images/cards/The_Platinum_Card.png",
+  "name": "The Platinum Card\u00ae",
+  "type": "Points",
+  "point_type": "Air Miles",
+  "points": {
+      "general": 0.0,
+      "restaurant": 0.0,
+      "grocery": 0.0,
+      "drug_store": 0.0,
+      "gas": 0.0,
+      "travel": 0.0,
+      "entertainment": 0.0,
+      "bill_payments": 0.0,
+      "store_specific": false
+  }
+}
+
+// Initialize userData with the first card
+const userData = {
+  uid: 'local-user',
+  displayName: 'Local User',
+  cards: {
+    "amex_card_1": amexCard1
+  }
+};
+
+// Save to localStorage
+localStorage.setItem('userData', JSON.stringify(userData));
+console.log("Saved first card to localStorage");
+
+
+
+
+
+
+
+// Sample card 2
+const amexCard2 = {
+  "bank": "Amex",
+  "image": "https://icm.aexp-static.com/Internet/internationalcardshop/en_ca/images/cards/SimplyCash_Card.png",
+  "name": "SimplyCashTM Card from American Express",
+  "type": "Cashback",
+  "point_type": false,
+  "points": {
+    "general": 1.25,
+    "restaurant": 1.25,
+    "grocery": 1.25,
+    "drug_store": 1.25,
+    "gas": 1.25,
+    "travel": 1.25,
+    "entertainment": 1.25,
+    "bill_payments": 1.25,
+    "store_specific": false
+  }
+};
+
+// Get existing userData
+const existingUserData = JSON.parse(localStorage.getItem('userData'));
+
+// Add second card
+existingUserData.cards["amex_card_2"] = amexCard2;
+
+// Save updated data back to localStorage
+localStorage.setItem('userData', JSON.stringify(existingUserData));
+console.log("Added second card to localStorage");
+
+
+
+
+
+
+
+
+// Function to read and render cards in a table layout
+function readAndRenderCards() {
+  // Get cards from localStorage
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  const cards = userData?.cards || {};
+
+  // Get the container
+  const container = document.getElementById('userWalletCards');
+  if (!container) {
+    console.error("Card container not found");
+    return;
+  }
+
+  // Keep the search and add buttons
+  const buttonsContainer = document.getElementById('userWalletCardsFlex');
+
+  // Create a new table for cards
+  const cardsTable = document.createElement('div');
+  cardsTable.className = 'container mt-4';
+  cardsTable.innerHTML = `
+    <!-- <h2 class="mb-4">Your Credit Cards</h2> -->
+    <div class="card-list">
+      <!-- Cards will be inserted here -->
+    </div>
+  `;
+
+  // Insert table after the buttons
+  container.insertBefore(cardsTable, buttonsContainer.nextSibling);
+
+  const cardListContainer = cardsTable.querySelector('.card-list');
+
+  // Render each card
+  Object.entries(cards).forEach(([cardId, cardData]) => {
+    // Create card row
+    const cardRow = document.createElement('div');
+    cardRow.className = 'card mb-4 border-0 shadow-sm';
+    cardRow.id = `card-${cardId}`;
+
+    // Format rewards data
+    const rewardsHTML = Object.entries(cardData.points)
+      .filter(([key, value]) => key !== 'store_specific' && typeof value === 'number')
+      .map(([key, value]) => {
+        const categoryName = getCategoryName(key);
+        return `
+          <div class="reward-item">
+            <span class="category">${categoryName}:</span>
+            <span class="value">${value}%</span>
+          </div>
+        `;
+      })
+      .join('');
+
+    // Handle store-specific rewards if any
+    let storeSpecificHTML = '';
+    if (cardData.points.store_specific) {
+      storeSpecificHTML = `
+        <div class="mt-3">
+          <h6 class="fw-bold">Store Specific Rewards:</h6>
+          ${Object.entries(cardData.points.store_specific)
+            .map(([_, storeData]) => `
+              <div class="reward-item">
+                <span class="category">${storeData.name}:</span>
+                <span class="value">${storeData.cashback}%</span>
+              </div>
+            `)
+            .join('')
+          }
+        </div>
+      `;
+    }
+
+    cardRow.innerHTML = `
+  <div class="card-body p-0">
+    <div class="row g-0">
+      <!-- Image column (now first) -->
+      <div class="col-md-4 d-flex align-items-center justify-content-center p-3 bg-light">
+        <img src="${cardData.image}" class="img-fluid rounded" style="max-width: 250px;" alt="${cardData.name}">
+      </div>
+      <!-- Info column (now second) -->
+      <div class="col-md-8">
+        <div class="p-4">
+          <h4 class="card-title fw-bold">${cardData.name}</h4>
+          <h6 class="text-muted mb-3">${cardData.bank}</h6>
+
+          <div class="card-type mb-3">
+            <span class="badge ${cardData.type === 'Cashback' ? 'bg-success' : 'bg-primary'} me-2">
+              ${cardData.type}
+            </span>
+            ${cardData.point_type ?
+              `<span class="badge bg-info">${cardData.point_type}</span>` : ''}
+          </div>
+
+          <h6 class="fw-bold">Rewards:</h6>
+          <div class="rewards-grid">
+            ${rewardsHTML}
+          </div>
+          ${storeSpecificHTML}
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
+    cardListContainer.appendChild(cardRow);
+  });
+
+  // Add styles
+  const style = document.createElement('style');
+  style.textContent = `
+    .card-list {
+      border-spacing: 0 1rem;
+    }
+    .rewards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.5rem;
+    }
+    .reward-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+    .reward-item .category {
+      font-weight: 500;
+    }
+    .reward-item .value {
+      font-weight: 600;
+      color: #198754;
+    }
+    .card:hover {
+      box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+      transition: box-shadow 0.3s ease;
+    }
+  `;
+  document.head.appendChild(style);
+
+  console.log("Rendered cards from localStorage in table layout");
+}
+
+// Helper function to get user-friendly category names
+function getCategoryName(key) {
+  const categoryMap = {
+    general: "General Purchases",
+    restaurant: "Restaurants",
+    grocery: "Grocery",
+    drug_store: "Pharmacies",
+    drug: "Pharmacies",
+    gas: "Gas Stations",
+    travel: "Travel",
+    entertainment: "Entertainment",
+    bill_payments: "Bill Payments"
+  };
+
+  return categoryMap[key] || key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Call render function
+readAndRenderCards();
+
+
+
+
+
+
+
+
+    // Script to connect the DOM elements to our JavaScript functions
+    document.addEventListener('DOMContentLoaded', function() {
+      // Attach event handlers that don't rely on inline attributes
+      const applyGeneralBtn = document.getElementById('applyGeneralBtn');
+      if (applyGeneralBtn) {
+        applyGeneralBtn.addEventListener('click', function() {
+          if (typeof applyGeneralToBlank === 'function') {
+            applyGeneralToBlank();
+          } else if (typeof window.applyGeneralToBlank === 'function') {
+            window.applyGeneralToBlank();
+          }
+        });
+      }
+
+      const discardCardBtn = document.getElementById('discardCardBtn');
+      if (discardCardBtn) {
+        discardCardBtn.addEventListener('click', function() {
+          if (typeof discardCard === 'function') {
+            discardCard();
+          } else if (typeof window.discardCard === 'function') {
+            window.discardCard();
+          }
+        });
+      }
+
+      // Ensure form uses our save function
+      const addCardForm = document.getElementById('addCardForm');
+      if (addCardForm) {
+        addCardForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          if (typeof saveCard === 'function') {
+            saveCard();
+          } else if (typeof window.saveCard === 'function') {
+            window.saveCard();
+          }
+          return false;
+        });
+      }
+    });
+
+    const logIt = () => console.log('hello')
+
+
+  </script>
+</body>
+</html>

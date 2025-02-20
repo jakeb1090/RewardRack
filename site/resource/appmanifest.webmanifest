@@ -1,0 +1,38 @@
+{
+        "name": "DisCard: Card Selection Simplified",
+        "short_name": "DisCard",
+        "description": "Worried about your wallet bulge? Remembering which credit card to use for which situation is difficult, but it doesn't have to be. Discard missed cashback rewards so you can spend with confidence!",
+        "dir": "auto",
+        "lang": "en",
+        "icons": [
+                {     
+                        "src": "/image/icon/logo_s.png",
+                        "sizes": "96x96",
+                        "type": "image/png",
+                        "purpose": "maskable any"
+                },
+                {     
+                        "src": "/image/icon/logo_m.png",
+                        "sizes": "128x128",
+                        "type": "image/png",
+                        "purpose": "maskable any"
+                },
+                {     
+                        "src": "/image/icon/logo_l.png",
+                        "sizes": "384x384",
+                        "type": "image/png",
+                        "purpose": "maskable any"
+                },
+                {     
+                        "src": "/image/icon/logo_xxl.png",
+                        "sizes": "2048x2048",
+                        "type": "image/png",
+                        "purpose": "maskable any"
+                }
+        ],
+        "display": "fullscreen",
+        "background_color": "#9999FF80",
+        "theme_color": "#9999FF",
+        "start_url": "/",
+        "categories": ["finance", "utilities", "productivity", "lifestyle"]
+}

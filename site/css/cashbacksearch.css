@@ -1,0 +1,48 @@
+.search-label {
+    margin-top: 3em;
+    display: flex;
+    justify-content: center;
+}
+
+h1 {
+    font-family:"Big Shoulders Stencil Display";
+    font-size: 60px;
+}
+
+.input-group {
+    display: flex;
+    justify-content: center;
+}
+
+.heading{
+    font-size: 30px;
+}
+
+.search-bar{
+    height: 50px;
+    width: 66%;
+}
+
+#myUL{
+    list-style-type: none;
+    
+}
+#myUL li{
+    border:1px solid #ddd;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 12px;
+    color: black;
+    display: block;
+    width: 70%;
+    display:flex;
+    margin:auto;
+    margin-right: 16%;
+
+}
+
+
+#myUL li a:hover{
+    background-color: #eee;
+}
